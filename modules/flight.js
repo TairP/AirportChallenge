@@ -1,60 +1,59 @@
-import {EventEmitter} from 'events'
-import dayjs from 'dayjs'
-import log from '@ajar/marker'; 
+import dayjs from "dayjs";
+import log from "@ajar/marker";
+import {EventEmitter} from "events";
 
-// import flightManager from './flightsManager'
+class Flight extends EventEmitter {
+    #flight_number;
+    #destination;
+    #origin;
+    #departed;
+    #arrived;
 
-export class Flight extends EventEmitter {
-    #random = Math.round(Math.random() * 3000 + 2000) 
-    #origin = null
-    #destination = null
-    #number = null
-    #departed = -1
-    #arrived = -1
+    static FLIGHT_ARRIVED = 'FLIGHT_ARRIVED';
+    static FLIGHT_DEPARTED = 'FLIGHT_DEPARTED';
 
+    constructor({number, origin, destination}) {
+        super();
 
-    constructor({origin,number,destination }){
-        super()
-        this.#origin = origin
-        this.#number = number
-        this.#destination = destination
+        this.#arrived = 0;
+        this.#departed = 0;
+
+        this.#flight_number = number;
+        this.#origin = origin;
+        this.#destination = destination;
     }
 
-    get number(){return this.#number}
-    set number(value){ this.#number = value}
+    get flight_number() {return this.#flight_number};
+    set flight_number(v) {this.#flight_number = v};
 
-    get origin(){return this.#origin}
-    set origin(value){ this.#origin = value}
+    get destination() {return this.#destination};
+    set destination(v) {this.#destination = v};
 
-    get destination(){return this.#destination}
-    set destination(value){ this.#destination = value}
+    get origin() {return this.#origin};
+    set origin(v) {this.#origin = v};
 
-    get departed(){return this.#departed}
-    set departed(value){throw new Error('Read only property')}
+    get departed() {return this.#departed};
+    set departed(v) {throw new Error('departed is a read only property')};
 
-    get arrived(){return this.#arrived}
-    set arrived(value){throw new Error('Read only property')}
-
+    get arrived() {return this.#arrived};
+    set arrived(v) {throw new Error('arrived is a read only property')};
 
     #arrive = () => {
-        this.#arrived = dayjs().format('DD/MM/YYYY,HH:mm:ss')
-        log.cyan('Arrived:',`${this.arrived}`)
-}
+        this.#arrived = dayjs().format('DD/MM/YYYY,HH:mm:ss');
 
-    depart = () => {
-        setTimeout(() => {
-            this.#departed = dayjs().format('DD/MM/YYYY,HH:mm:ss')
-            this.emit('depart') 
-        }, this.#random);
-
-        setTimeout( ()=> { 
-            this.#arrive();
-         }, this.#random + 5000 );
-
+        this.emit(Flight.FLIGHT_ARRIVED, this);
     }
 
+    depart() {
+        this.#departed = dayjs().format('DD/MM/YYYY,HH:mm:ss');
+        log.magenta('✈️  departed: ', this.#departed, ' flight number: ', this.#flight_number);
+
+        this.emit(Flight.FLIGHT_DEPARTED, this);
+
+        const random_delay = 6 + (Math.random() * 4) * 1000;
+
+        setTimeout(this.#arrive, random_delay);
+    }
 }
 
-// const example = new Flight('h','h','h')
-
-// console.log(example.departed)
+export default Flight;

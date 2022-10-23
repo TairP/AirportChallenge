@@ -1,42 +1,27 @@
-
-import { uniqueDestination,createFlight,counter} from "./modules/flightsManager.js";
-import all_data from './flights.json' assert { type:"json" }
+import all_data from './data/flights.json' assert { type:"json" }
 import log from '@ajar/marker'; 
+import Flight from './modules/Flight.mjs';
+import FlightManager from './modules/FlightManage.mjs';
+
+const flight_array = all_data.flights;
+
+const fm = new FlightManager();
+
+for (let flight_data of flight_array) {
+
+    const flight = fm.create_flight(flight_data);
+
+    flight.on(Flight.FLIGHT_ARRIVED, print_flight_info);
+
+    flight.depart();
+}
+
+log.magenta('=============================================');
+log.yellow(fm.flights_count , ' flights were created');
+log.d('destinations: ', fm.destinations);
+log.magenta('=============================================')
 
 
-const {flights} = all_data
-
-// myFlight.on('FLIGHT ARRIVED', instance => {
-//     console.log(instance.origin)
-// })
-
-// const arr = uniqueDestination(flights)
-// console.log(arr.length)
-
-
-const destinationArr = uniqueDestination(flights)
-const stringOfDestination = `${destinationArr}`
-
-// console.log(arr)
-
-flights.forEach((flight) => {
-
-	// destructure the following data:
-	const { number, origin, destination } = flight;
-
-	// create a Flight instance using a FlightManager method
-	createFlight(number, origin, destination);
-	
-});
-setTimeout(() => {
-	log.magenta('===================================================')
-	log.yellow(destinationArr.length,' flights were created')
-	log.blue('destination: ',stringOfDestination)
-	log.magenta('===================================================')
-	
-}, 5000);
-
-
-// const allFlights = pushUniqueDestination(flights)
-
-// console.log(allFlights)
+function print_flight_info(instance) {
+    log.blue(`✈️ Arrived: ${instance.flight_number}`, ' from: ', instance.origin, ' to ', instance.destination, ' at ', instance.arrived);
+}
