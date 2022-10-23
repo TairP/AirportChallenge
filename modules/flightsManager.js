@@ -26,3 +26,4 @@ class FlightManager {
 };
 
 export default FlightManager;
+;
