@@ -57,4 +57,3 @@ class Flight extends EventEmitter {
 }
 
 export default Flight;
-;

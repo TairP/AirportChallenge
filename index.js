@@ -25,4 +25,3 @@ log.magenta('=============================================')
 function print_flight_info(instance) {
     log.blue(`✈️ Arrived: ${instance.flight_number}`, ' from: ', instance.origin, ' to ', instance.destination, ' at ', instance.arrived);
 }
-;
